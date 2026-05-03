@@ -161,3 +161,8 @@
 - **Timezone:** Nepal Standard Time (UTC+5:45) deploy maintenance windows should be scheduled for 10pm-4am NPT (4:15pm-10:15pm UTC) to minimize business impact.
 - **Internet reliability:** Nepal's internet infrastructure can be less reliable than US/EU. Design for graceful degradation: cache aggressively at CloudFront, use exponential backoff in clients, and ensure health check failover TTLs are 60 seconds or less.
 - **Team:** 11 engineers in a growing team invest in runbooks, blameless postmortems, and pair on-call rotations with UTC+5:45 awareness for incident response SLAs.
+
+
+---
+
+> Note: As you finish going through all the task, you can continue reading to [Terraform-Setup,md](./Terraform-Setup.md) to provision these resources in AWS.
