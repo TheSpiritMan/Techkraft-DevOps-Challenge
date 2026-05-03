@@ -4,6 +4,10 @@
     git clone https://github.com/TheSpiritMan/Techkraft-DevOps-Challenge.git
     cd Techkraft-DevOps-Challenge
     ```
+## AWS Architecture
+
+<img src="./Assets/Techkraft-AWS-Terraform-Architecture.png">
+
 ---
 ## S3 Bucket
 - We are using AWS S3 bucket as a remote backend storage for our terraform to store state files.
