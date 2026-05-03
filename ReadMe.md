@@ -110,6 +110,8 @@
     - Single-AZ RDS with backups disabled
     - No remote state backend. See [`part1-terraform/analysis.md`](part1-terraform/analysis.md).
 
+> Note: Once you finish going through all the task, you can continue reading to [Terraform-Setup,md](./Terraform-Setup.md) to provision these resources in AWS.
+
 ### Part 2: Linux Administration (~25 min)
 - **Troubleshooting:** Structured 5-step diagnosis — network connectivity (`ping`/`nc`/`traceroute`), SSH daemon status via SSM, Security Group/iptables/fail2ban checks, resource utilization (top/iostat/dmesg), and log analysis (journalctl/auth.log/console output). See [`part2-linux/part2A-ssh-troubleshooting/troubleshooting.md`](part2-linux/part2A-ssh-troubleshooting/troubleshooting.md).
 - **Dockerfile:** Multi-stage build with `python:3.11-alpine` builder and production stages, non-root user (uid 1001), read-only filesystem, gunicorn for production serving, and Docker HEALTHCHECK. See [`part2-linux/part2B-Dockerization/Dockerfile`](part2-linux/part2B-Dockerization/Dockerfile).
@@ -164,5 +166,3 @@
 
 
 ---
-
-> Note: As you finish going through all the task, you can continue reading to [Terraform-Setup,md](./Terraform-Setup.md) to provision these resources in AWS.
