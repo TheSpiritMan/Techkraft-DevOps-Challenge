@@ -1,0 +1,66 @@
+{
+  "report_metadata": {
+    "generated_at": "2026-05-02T10:27:17.248780+00:00",
+    "regions_queried": [
+      "us-east-1",
+      "us-west-2"
+    ],
+    "threshold_percent": 80.0,
+    "total_instances": 2,
+    "high_cpu_instances": 0
+  },
+  "instances": [
+    {
+      "instance_id": "i-017678a5ead2da348",
+      "name": "",
+      "instance_type": "t3.micro",
+      "availability_zone": "us-east-1b",
+      "private_ip": "10.0.11.107",
+      "public_ip": "N/A",
+      "launch_time": "2026-05-02T09:44:23+00:00",
+      "cpu_utilization": {
+        "avg_percent": 0.13,
+        "min_percent": 0.0,
+        "max_percent": 0.23,
+        "datapoints_collected": 9,
+        "lookback_hours": 1,
+        "period_seconds": 300
+      },
+      "alert": {
+        "high_cpu": false,
+        "threshold_percent": 80.0
+      },
+      "tags": {
+        "aws:autoscaling:groupName": "techkraft-app-asg",
+        "aws:ec2launchtemplate:id": "lt-017d2e111256bc70e",
+        "aws:ec2launchtemplate:version": "1"
+      }
+    },
+    {
+      "instance_id": "i-0dbe6633e5d436e8b",
+      "name": "",
+      "instance_type": "t3.micro",
+      "availability_zone": "us-east-1a",
+      "private_ip": "10.0.10.48",
+      "public_ip": "N/A",
+      "launch_time": "2026-05-02T09:44:23+00:00",
+      "cpu_utilization": {
+        "avg_percent": 0.11,
+        "min_percent": 0.0,
+        "max_percent": 0.17,
+        "datapoints_collected": 9,
+        "lookback_hours": 1,
+        "period_seconds": 300
+      },
+      "alert": {
+        "high_cpu": false,
+        "threshold_percent": 80.0
+      },
+      "tags": {
+        "aws:ec2launchtemplate:id": "lt-017d2e111256bc70e",
+        "aws:ec2launchtemplate:version": "1",
+        "aws:autoscaling:groupName": "techkraft-app-asg"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+# Service: stable internal DNS name and load balancing across pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: techkraft
+  labels:
+    app: backend
+spec:
+  selector:
+    app: backend
+  type: ClusterIP           # Internal only; 
+  ports:
+    - name: http
+      port: 80
+      targetPort: http      # Maps to the named port on the container
+      protocol: TCP

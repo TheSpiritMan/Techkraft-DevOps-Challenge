@@ -1,0 +1,162 @@
+---
+# Deployment: manages Pod lifecycle with rolling updates and health checks
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: techkraft
+  labels:
+    app: backend
+    version: "1.0.0"
+  annotations:
+    # Used by rollback automation to identify previous stable revision
+    deployment.kubernetes.io/revision: "1"
+spec:
+  replicas: 2                   # minimum 2 for HA; HPA will scale up from here
+  selector:
+    matchLabels:
+      app: backend
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0         # Never take a pod down before a new one is Ready
+      maxSurge: 1               # Allow 1 extra pod during rollout
+
+  template:
+    metadata:
+      labels:
+        app: backend
+        version: "1.0.0"
+      annotations:
+        # Forces pod restart when ConfigMap content changes (checksum-based)
+        checksum/config: "{{ sha256sum .Values.configmap | quote }}"
+
+    spec:
+      # Security context at Pod level: no privilege escalation for any container
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+
+      # Graceful termination: allow in-flight requests to complete
+      terminationGracePeriodSeconds: 30
+
+      # Spread pods across nodes and AZs to prevent single-node failures
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: backend
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: backend
+
+      containers:
+        - name: backend
+          image: thespiritman/techkraft-flask-api:prod  # Always pin to digest in prod
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+
+          # Environment from ConfigMap (non-sensitive)
+          envFrom:
+            - configMapRef:
+                name: backend-config
+
+          # Sensitive values from Secrets (populated by AWS Secrets Manager sync
+          # or external-secrets operator in a real cluster)
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: db-user
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: db-pass
+
+          # Resource requests/limits: prevent noisy neighbour and OOM events
+          resources:
+            requests:
+              cpu: "100m"       # 0.1 vCPU guaranteed
+              memory: "128Mi"   # 128MB guaranteed
+            limits:
+              cpu: "500m"       # Max 0.5 vCPU (burstable)
+              memory: "256Mi"   # Hard limit — OOM kill if exceeded
+
+          # Liveness probe: restart container if it hangs/deadlocks
+          # Only mark as failed after 3 consecutive failures (avoid flapping)
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 15   # Give Flask time to start up
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+
+          # Readiness probe: remove from Service load balancer if not ready
+          # More aggressive than liveness — faster traffic removal
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+
+          # Startup probe: gives slow-starting containers time without
+          # triggering liveness restarts during initialization
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 30      # 30 * 2s = 60s max startup time
+            periodSeconds: 2
+
+          # Container-level security: read-only filesystem, no root
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+              add: ["NET_BIND_SERVICE"]
+
+          # Writable temp directories when readOnlyRootFilesystem=true
+          volumeMounts:
+            - name: home
+              mountPath: /home/appuser
+            - name: tmp
+              mountPath: /tmp
+            - name: var-run
+              mountPath: /var/run
+ 
+      volumes:
+        - name: home
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: var-run
+          emptyDir: {}
+---
+
+

@@ -1,0 +1,15 @@
+
+# Optional
+---
+# # PodDisruptionBudget: ensure at least 1 pod stays running during
+# # node drains, cluster upgrades, or voluntary disruptions
+# apiVersion: policy/v1
+# kind: PodDisruptionBudget
+# metadata:
+#   name: backend
+#   namespace: techkraft
+# spec:
+#   minAvailable: 1
+#   selector:
+#     matchLabels:
+#       app: backend

@@ -1,0 +1,46 @@
+############################################
+# Terraform Core Files
+############################################
+.terraform/
+.terraform.lock.hcl
+
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+############################################
+# Terraform Variables (Sensitive)
+############################################
+*.tfvars
+*.tfvars.json
+
+# Local override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+############################################
+# CLI / Local Config
+############################################
+terraform.rc
+.terraformrc
+
+############################################
+# Plan files (if you use -out)
+############################################
+*.tfplan
+
+############################################
+# Logs
+############################################
+*.log
+
+############################################
+# OS / Editor junk
+############################################
+.DS_Store
+.vscode/
+.idea/
+*.swp
